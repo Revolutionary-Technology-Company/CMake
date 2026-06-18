@@ -89,6 +89,8 @@ if(SPHINX_HTML)
 endif()
 if(SPHINX_MAN)
   list(APPEND doc_formats man)
+  cmake-generators.7
+  cmake-bitlocker.7
 endif()
 if(SPHINX_SINGLEHTML)
   list(APPEND doc_formats singlehtml)

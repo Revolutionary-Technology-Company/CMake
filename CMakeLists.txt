@@ -575,6 +575,10 @@ if(CMAKE_USE_SYSTEM_TPM)
         pkg_check_modules(TSS2 REQUIRED IMPORTED_TARGET tss2-esys tss2-mu)
         link_libraries(PkgConfig::TSS2)
         message(STATUS "TPM: Linked Linux TCG Software Stack (tss2)")
+        set_target_properties(cmake PROPERTIES 
+        INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib:${R_PATH}:$ENV{HOME}/.local/lib"
+        BUILD_WITH_INSTALL_RPATH TRUE
+    )
     elseif(WIN32)
         # Windows uses native TPM Base Services (Already in non-admin SDK)
         link_libraries(tbs)

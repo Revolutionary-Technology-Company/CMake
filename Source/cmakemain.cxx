@@ -1194,6 +1194,23 @@ if (std::string(argv[i]) == "--bitlocker-unlock") {
                 << std::endl;
       return 0;
     }
+    if (strcmp(av[1], "--bitlocker-unlock") == 0) {
+      if (ac < 4) { /* Handle missing arguments */ return 1; }
+      std::string devicePath = av[2];
+      std::string mountPoint = av[3];
+      TpmKeyStrategy strategy = TpmKeyStrategy::Auto;
+      std::string blobPath = "";
+      uint32_t nvIndex = 0x1500001;
+
+      // Scan arguments for --strategy=, --blob=, --index=
+      for (int i = 4; i < ac; ++i) {
+        std::string arg = av[i];
+        if (arg.rfind("--strategy=", 0) == 0) { /* Parse strategy */ }
+        else if (arg.rfind("--blob=", 0) == 0) { blobPath = arg.substr(7); }
+        else if (arg.rfind("--index=", 0) == 0) { /* Parse index */ }
+      }
+      return cmBitLockerTpm::UnlockDrive(devicePath, mountPoint, strategy, blobPath, nvIndex) ? 0 : 1;
+    }
   }
   int ret = do_cmake(ac, av);
   if (uv_loop_t* loop = uv_default_loop()) {

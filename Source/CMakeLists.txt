@@ -862,6 +862,11 @@ add_library(
 
   bindexplib.cxx
   )
+if(UNIX AND NOT APPLE)
+    # Ensures your custom code has access to the tss2 headers during source compilation
+    include_directories(${TSS2_INCLUDE_DIRS})
+endif()
+
 target_include_directories(
   CMakeLib
   PUBLIC

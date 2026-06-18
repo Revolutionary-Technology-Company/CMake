@@ -65,7 +65,8 @@ if(NOT CMake_TEST_EXTERNAL_CMAKE)
 
   # Allow the user to enable/disable all system utility library options by
   # defining CMAKE_USE_SYSTEM_LIBRARIES or CMAKE_USE_SYSTEM_LIBRARY_${util}.
-  set(UTILITIES BZIP2 CPPDAP CURL EXPAT FORM JSONCPP LIBARCHIVE LIBLZMA LIBRHASH LIBUV NGHTTP2 ZLIB ZSTD)
+  set(UTILITIES BZIP2 CPPDAP CURL EXPAT FORM JSONCPP LIBARCHIVE LIBLZMA LIBRHASH LIBUV NGHTTP2 ZLIB ZSTD TPM)
+  
   foreach(util IN LISTS UTILITIES)
     if(NOT DEFINED CMAKE_USE_SYSTEM_LIBRARY_${util}
         AND DEFINED CMAKE_USE_SYSTEM_LIBRARIES)
@@ -95,6 +96,7 @@ if(NOT CMake_TEST_EXTERNAL_CMAKE)
   endif()
 
   # Optionally use system utility libraries.
+  option(CMAKE_USE_SYSTEM_TPM "Use system-installed TPM Software Stack" "${CMAKE_USE_SYSTEM_LIBRARY_TPM}")
   option(CMAKE_USE_SYSTEM_LIBARCHIVE "Use system-installed libarchive" "${CMAKE_USE_SYSTEM_LIBRARY_LIBARCHIVE}")
   if(CMake_ENABLE_DEBUGGER)
     option(CMAKE_USE_SYSTEM_CPPDAP "Use system-installed cppdap" "${CMAKE_USE_SYSTEM_LIBRARY_CPPDAP}")
@@ -565,6 +567,21 @@ if(NOT CMake_TEST_EXTERNAL_CMAKE)
       unset(CXX_FLAGS_LIST)
     endif()
   endif()
+
+if(CMAKE_USE_SYSTEM_TPM)
+    if(UNIX AND NOT APPLE)
+        # Linux uses pkg-config to locate local user-space TSS2 stacks
+        find_package(PkgConfig REQUIRED)
+        pkg_check_modules(TSS2 REQUIRED IMPORTED_TARGET tss2-esys tss2-mu)
+        link_libraries(PkgConfig::TSS2)
+        message(STATUS "TPM: Linked Linux TCG Software Stack (tss2)")
+    elseif(WIN32)
+        # Windows uses native TPM Base Services (Already in non-admin SDK)
+        link_libraries(tbs)
+        add_compile_definitions(WIN32_LEAN_AND_MEAN)
+        message(STATUS "TPM: Linked Windows TPM Base Services (tbs.lib)")
+    endif()
+endif()
 
   # build the remaining subdirectories
   add_subdirectory(Source)

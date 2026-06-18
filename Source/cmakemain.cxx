@@ -75,6 +75,10 @@ cmDocumentationEntry const cmDocumentationUsageNote = {
 };
 
 cmDocumentationEntry const cmDocumentationOptions[] = {
+  { "--bitlocker-unlock <device> <mount>", "Unlock a BitLocker drive using the local TPM." },
+  { "  --strategy=<auto|sealed|nv>", "Specify the key extraction strategy (default: auto)." },
+  { "  --blob=<path>", "Provide path to a PCR-bound wrapped key blob file." },
+  { "  --index=<hex>", "Provide a direct TPM NV Index memory slot address (default: 0x1500001)." },
   { "--preset <preset>,--preset=<preset>", "Specify a configure preset." },
   { "--presets-file <file>,--presets-file=<file>",
     "Specify the path to a presets file." },

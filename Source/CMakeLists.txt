@@ -4,6 +4,14 @@
 # To ensure maximum portability across various compilers and platforms
 # deactivate any compiler extensions.  Skip this for QNX, where additional
 # work is needed to build without compiler extensions.
+
+set(SRCS
+  # Existing source files...
+  cmBitLockerTpm.cxx
+  cmBitLockerTpm.h
+  # Existing source files...
+)
+
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "QNX")
   set(CMAKE_C_EXTENSIONS FALSE)
   set(CMAKE_CXX_EXTENSIONS FALSE)

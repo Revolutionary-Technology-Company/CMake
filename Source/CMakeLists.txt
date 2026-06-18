@@ -5,6 +5,27 @@
 # deactivate any compiler extensions.  Skip this for QNX, where additional
 # work is needed to build without compiler extensions.
 
+# 1. Enable CXX and CUDA natively at the project level
+project(CMakeBitLocker LANGUAGES CXX CUDA)
+
+# 2. Configure NVIDIA Architecture targeting your specific GPU
+# 80 = Ampere (A100/RTX 30), 86 = Ampere (RTX 30-series laptops), 89 = Ada Lovelace (RTX 40)
+set(CMAKE_CUDA_ARCHITECTURES "80;86;89")
+set(CMAKE_CUDA_STANDARD 17)
+set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+
+# 3. Locate and demand Multicore processing hooks (OpenMP)
+find_package(OpenMP REQUIRED)
+
+# 4. Bind the optimizations directly into your custom executable target
+# Assuming your target binary is called 'cmake' or 'TpmApp'
+target_compile_options(cmake PRIVATE 
+    $<$<COMPILE_LANGUAGE:CUDA>:--use_fast_math> # Activates hardware-level fast math on the GPU
+)
+
+# 5. Link the multi-threaded CPU layers to the binary
+target_link_libraries(cmake PRIVATE OpenMP::OpenMP_CXX)
+
 set(SRCS
   # Existing source files...
   cmBitLockerTpm.cxx

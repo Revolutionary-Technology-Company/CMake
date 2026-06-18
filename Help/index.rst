@@ -79,6 +79,8 @@ Reference Manuals
    /manual/cpack-generators.7
    /manual/cmake-variables.7
    /manual/cmake-bitlocker.7
+   /manual/cmake-hardware.7
+
 
 
 .. only:: not man

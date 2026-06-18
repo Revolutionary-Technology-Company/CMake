@@ -2,6 +2,47 @@
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
+#include <iostream>
+#include <vector>
+#include <omp.h> // Include OpenMP for Multicore scaling
+
+// CUDA Kernel definition to offload arithmetic straight to NVIDIA hardware
+__global__ void TpmCryptoKernel(float* data, int size) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < size) {
+        // GPU Fast Math hardware pipeline 
+        data[idx] = __sinf(data[idx]) * __cosf(data[idx]); 
+    }
+}
+
+void ExecuteOptimizedPipeline(std::vector<float>& hostData) {
+    int dataSize = hostData.size();
+
+    std::cout << "--- CPU MULTICORE LAYER ---\n";
+    // #pragma omp parallel for splits iterations automatically across ALL CPU threads
+    #pragma omp parallel for
+    for (int i = 0; i < dataSize; ++i) {
+        hostData[i] = hostData[i] * 2.5f; // Executed in parallel by OpenMP cores
+    }
+    std::cout << "Successfully processed array using " << omp_get_max_threads() << " CPU threads.\n";
+
+    std::cout << "\n--- NVIDIA CUDA ACCELERATION LAYER ---\n";
+    float* deviceData = nullptr;
+    cudaMalloc(&deviceData, dataSize * sizeof(float));
+    cudaMemcpy(deviceData, hostData.data(), dataSize * sizeof(float), cudaMemcpyHostToDevice);
+
+    // Launch threads inside the NVIDIA GPU Core matrix
+    int threadsPerBlock = 256;
+    int blocksPerGrid = (dataSize + threadsPerBlock - 1) / threadsPerBlock;
+    TpmCryptoKernel<<<blocksPerGrid, threadsPerBlock>>>(deviceData, dataSize);
+
+    // Synchronize and copy optimized data back to user memory space
+    cudaDeviceSynchronize();
+    cudaMemcpy(hostData.data(), deviceData, dataSize * sizeof(float), cudaMemcpyDeviceToHost);
+    cudaFree(deviceData);
+    
+    std::cout << "GPU acceleration sequence completed via NVCC.\n";
+}
 
 #if defined(__linux__)
 #include <tss2/tss2_esys.h>

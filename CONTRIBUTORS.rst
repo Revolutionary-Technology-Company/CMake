@@ -21,6 +21,7 @@ The following individuals and institutions are among the contributors:
 * Christopher Harvey
 * `Christoph Grüninger <mailto:foss@grueninger.de>`__
 * `Clement Creusot <mailto:creusot@cs.york.ac.uk>`__
+* `Cory Hofstad <mailto:hofstad.cory@gmail.com>`__
 * `Daniel Blezek <mailto:blezek@gmail.com>`__
 * `Daniel Pfeifer <mailto:daniel@pfeifer-mail.de>`__
 * `Dawid Wróbel <mailto:me@dawidwrobel.com>`__
